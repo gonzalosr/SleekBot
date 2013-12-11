@@ -4,7 +4,6 @@
     See the README file for more information.
 """
 
-import math
 
 import random
 import string
@@ -16,9 +15,9 @@ from sleekbot.plugbot import BotPlugin
 import sleekbot.confighandler as confighandler
 
 # make a list of safe functions
-SAFE_LIST = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh', \
-'degrees', 'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp', \
-'log', 'log10', 'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan', \
+SAFE_LIST = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh',
+'degrees', 'e', 'exp', 'fabs', 'floor', 'fmod', 'frexp', 'hypot', 'ldexp',
+'log', 'log10', 'modf', 'pi', 'pow', 'radians', 'sin', 'sinh', 'sqrt', 'tan',
 'tanh', 'abs']
 # use the list to filter the local namespace
 SAFE_DICT = dict([(k, getattr(locals()['math'], k, None)) for k in SAFE_LIST])
@@ -26,7 +25,7 @@ SAFE_DICT['d'] = random.randint
 
 class BotMath(BotPlugin):
     """A nerdy plugin for rolling complex or simple formulas."""
-    
+
     def __init__(self, passgen={'choice': 'all', 'length': 8, 'max_length': 100}):
         # Passgen defaults
         BotPlugin.__init__(self)
@@ -51,8 +50,9 @@ class BotMath(BotPlugin):
 
         if args.first > args.second:
             args.first, args.second = args.second, args.first
-            
+
         ran = random.randint(args.first, args.second)
+
         if msg['type'] == 'groupchat':
             return "%s rolls %d (%s - %s)" % \
                    (msg['mucnick'], ran, args.first, args.second)
@@ -68,7 +68,7 @@ class BotMath(BotPlugin):
     @botcmd(usage='[alpha|alphanum|numbers|all] [length]')
     def passgen(self, command, args, msg):
         """Generates random passwords"""
-        
+
         choices = {'alpha': string.letters,
                    'alphanum': string.letters + string.digits,
                    'num': string.digits,

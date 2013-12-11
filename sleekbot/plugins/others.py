@@ -5,6 +5,8 @@
 
 from sleekbot.commandbot import botcmd, CommandBot, denymsg
 from sleekbot.plugbot import BotPlugin
+from sleekxmpp.exceptions import IqError, IqTimeout
+import logging
 
 
 class Others(BotPlugin):
@@ -31,16 +33,25 @@ class Others(BotPlugin):
             [jid, text] = args.split(" ", 1)
         else:
             return "Insufficient parameters"
-        self.bot.sendMessage(jid, text, mtype='chat')
+        self.bot.sendMessage(jid, text, mtype='message')
         return "Sent."
 
     @botcmd(usage='[jid]')
     def ping(self, command, args, msg):
         """Discover latency to a jid."""
-        latency = self.bot['xep_0199'].sendPing(args, 10)
-        if latency == None:
-            response = "No response when pinging " + args
-        else:
-            response = "Ping response received from %s in %d seconds." % \
-                       (args, latency)
+        try:
+            latency = self.bot['xep_0199'].sendPing(args, 10)
+            if latency is None:
+                response = "No response when pinging " + args
+            else:
+                response = "Ping response received from %s in %d seconds." % \
+                    (args, latency)
+
+        except IqError as err:
+            logging.error(err.iq['error']['condition'])
+            response = err.iq['error']['condition']
+        except IqTimeout:
+            logging.error('Server is taking too long to respond')
+            response = 'Server is taking too long to respond'
+
         return response

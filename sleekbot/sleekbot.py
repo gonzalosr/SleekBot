@@ -33,13 +33,13 @@ from .acl import Enum
 
 END_STATUS = Enum(['none', 'restart', 'reload', 'die'])
 
+
 class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
     """ SleekBot is a pluggable Jabber/XMPP bot based on SleekXMPP
 
         SleekBot was originally written by Nathan Fritz and Kevin Smith.
         This fork is maintained by Hernan E. Grecco
     """
-    
 
     def __init__(self, config, plugin_config=None):
         """ Initializes the bot
@@ -55,11 +55,11 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         if self.store is not None:
             self.store = Store(self.store)
         else:
-            logging.warning("No storage element found in config file - " \
-                            "proceeding with no persistent storage, " \
+            logging.warning("No storage element found in config file - "
+                            "proceeding with no persistent storage, "
                             "plugin behaviour may be undefined.")
         self.rooms = {}
-        self.add_event_handler("session_start", self.handle_session_start, \
+        self.add_event_handler("session_start", self.handle_session_start,
                                threaded=True)
         self.register_xmpp_plugins()
         CommandBot.__init__(self)
@@ -70,9 +70,10 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
     def start(self):
         """ Connects to the server
         """
-        
+
         logging.info("Connecting to ...")
-        server = self.botconfig.get('connection.server', '')
+        server = 'nemo.notin.es:5222'
+        # self.botconfig.get('connection.server', '')
         if server and isinstance(server, (str, unicode)):
             server = server.split(':')
         else:
@@ -80,19 +81,19 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         super(SleekBot, self).connect(server)
 
     def get_botconfig(self):
-        """ Gets config elementtree 
+        """ Gets config elementtree
         """
         return self._botconfig
-        
+
     def set_botconfig(self, value):
         """ Sets the config elementtree
                 value is None: loads the previous config file
                 type of value is str: use is as the name of the config file
         """
-        
+
         self._botconfig.set(value)
-        
-    botconfig = property(get_botconfig, set_botconfig, None, \
+
+    botconfig = property(get_botconfig, set_botconfig, None,
                          'Configuration as a dictionary')
 
     def register_adhocs(self):
@@ -100,16 +101,15 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         """
         aboutform = self.plugin['xep_0004'].makeForm('form', "About SleekBot")
         aboutform.addField('about', 'fixed', value=self.__doc__)
-        self.plugin['xep_0050'].addCommand('about', 'About Sleekbot', aboutform)
+        # self.plugin['xep_0050'].addCommand('about', 'About Sleekbot', aboutform)
         pluginform = self.plugin['xep_0004'].makeForm('form', 'Plugins')
         plugins = pluginform.addField('plugin', 'list-single', 'Plugins')
         for key in self.cmd_plugins:
             plugins.addOption(key, key)
         plugins = pluginform.addField('option', 'list-single', 'Commands')
         plugins.addOption('about', 'About')
-        #plugins.addOption('config', 'Configure')
-        self.plugin['xep_0050'].addCommand('plugins', 'Plugins', pluginform,
-                                           self.form_plugin_command, True)
+        # plugins.addOption('config', 'Configure')
+        # self.plugin['xep_0050'].addCommand('plugins', 'Plugins', pluginform, self.form_plugin_command, True)
 
     def form_plugin_command(self, form, sessid):
         """ Take appropriate action when a plugin ad-hoc request is received.
@@ -118,7 +118,7 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         option = value['option']
         plugin = value['plugin']
         if option == 'about':
-            aboutform = self.plugin['xep_0004'].makeForm('form', 
+            aboutform = self.plugin['xep_0004'].makeForm('form',
                                                          'About SleekBot')
             aboutform.addField('about', 'fixed',
                                value=self.cmd_plugins[plugin].about())
@@ -135,10 +135,10 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         for plugin in plugins:
             try:
                 self.registerPlugin(**plugin)
-                logging.info("Registering XMPP plugin %s OK", \
+                logging.info("Registering XMPP plugin %s OK",
                              plugin['plugin'])
             except Exception as ex:
-                logging.info("Registering XMPP plugin %s FAILED: %s", \
+                logging.info("Registering XMPP plugin %s FAILED: %s",
                              plugin['plugin'], ex)
 
     def handle_session_start(self, event):
@@ -154,9 +154,14 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         """
         logging.info("Joining MUC rooms")
         xrooms = self.botconfig.get('rooms', ())
-        rooms = {}
-        for xroom in xrooms:
-            rooms[xroom['room']] = xroom['nick']
+
+        try:
+            rooms = {}
+            for xroom in xrooms:
+                rooms[xroom['room']] = xroom['nick']
+        except:
+                logging.info('No se han encontrado habitaciones')
+
         for room in set(self.rooms.keys()).difference(rooms.keys()):
             logging.info("Parting room %s.", room)
             self.plugin['xep_0045'].leaveMUC(room, self.rooms[room])
@@ -227,4 +232,4 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
             else:
                 return msg['from'].bare
         return None
-        
+
