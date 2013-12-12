@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -21,7 +22,7 @@ from sleekbot.plugbot import BotPlugin
 class RSSBot(BotPlugin):
     """ Periodically sends an rss summary to a MUC
     """
-    
+
     def __init__(self, feeds=()):
         BotPlugin.__init__(self)
         self._feeds = feeds
@@ -29,7 +30,7 @@ class RSSBot(BotPlugin):
             url = feed['url']
             logging.info("rssbot.py script starting with feed %s.", url)
             self.threads[url] = thread.start_new(self.loop, **feed)
-   
+
     def _on_register(self):
         """ Reads config file and create thread to manage feeds
         """
@@ -47,7 +48,7 @@ class RSSBot(BotPlugin):
         #    self.threads[feed].exit()
 
     def loop(self, feed_url, refresh, rooms):
-        """ The main thread loop that polls an rss feed 
+        """ The main thread loop that polls an rss feed
             with a specified frequency
         """
         self.load_cache(feed_url)
@@ -86,7 +87,7 @@ class RSSBot(BotPlugin):
             content = item['content'][0].value
         else:
             content = ''
-        text = html2text("Update from feed %s\n%s\n%s" % 
+        text = html2text("Update from feed %s\n%s\n%s" %
                          (feed_name, xml.sax.saxutils.escape(item['title']), content))
         self.bot.send_message(muc, text, mtype='groupchat')
 
@@ -103,7 +104,7 @@ class RSSBot(BotPlugin):
             with open(self.cache_filename(feed), 'rb') as file_:
                 self.rss_cache[feed] = pickle.load(file_)
         except IOError:
-            logging.error("Error loading rss data %s", 
+            logging.error("Error loading rss data %s",
                           self.cache_filename(feed))
 
     def save_cache(self, feed):
@@ -113,7 +114,7 @@ class RSSBot(BotPlugin):
             with open(self.cache_filename(feed), 'wb') as file_:
                 pickle.dump(self.rss_cache[feed], file_)
         except IOError:
-            logging.error("Error loading rss data %s", 
+            logging.error("Error loading rss data %s",
                           self.cache_filename(feed))
 
     @botcmd()
@@ -124,9 +125,9 @@ class RSSBot(BotPlugin):
             out += "\n" + number
             out += " - url: %(url)s refresh: %(refresh)d [min] rooms: %(rooms)r" % feed
         return out
-    
+
     def example_config(self):
-        return {'feeds': 
+        return {'feeds':
             ({'url': 'https://github.com/andyhelp/SleekBot/commits/develop.atom',
               'refresh': 1,
               'rooms': ('test@conference.jabber.org', 'test2@conference.jabber.org')

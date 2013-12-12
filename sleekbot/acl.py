@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -139,7 +140,7 @@ class ACL(object):
         """ Sumarizes the number of users per role in a string
         """
         summary = ['%d %s' % (self.count(getattr(self.ROLE, role)), role)
-                    for role in ACL.ROLE]
+                   for role in ACL.ROLE]
         return ', '.join(summary) + '.'
 
 
@@ -156,10 +157,10 @@ class ACLdb(ACL):
         """ Creates the sql table to hold the users if needed."""
         with self.store.context_cursor() as cur:
             if not len(cur.execute("pragma table_info('acl')").fetchall()) > 0:
-                cur.execute('CREATE TABLE "acl" ("id" INTEGER PRIMARY KEY ' \
+                cur.execute('CREATE TABLE "acl" ("id" INTEGER PRIMARY KEY '
                    'AUTOINCREMENT, "jid" VARCHAR(256) UNIQUE, "role" INTEGER)')
                 cur.execute('CREATE INDEX idx_role ON acl (role)')
-                logging.info("ACLdb: acl table created")
+                logging.info("ACLdb: tabla de acls creada")
 
     def __getitem__(self, jid):
         with self.store.context_cursor() as cur:
@@ -221,4 +222,3 @@ class ACLdb(ACL):
         with self.store.context_cursor() as cur:
             cur.execute(query, role)
             return int(cur.fetchone()[0])
-

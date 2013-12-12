@@ -1,0 +1,2 @@
+sleekbot/plugins
+sleekbot

@@ -1,25 +1,7 @@
 #!/usr/bin/env python
-"""
-    This file is part of SleekBot. http://github.com/hgrecco/SleekBot
-    See the README file for more information.
-
-
-SleekBot is a pluggable Jabber/XMPP bot based on SleekXMPP.
-
-It is configured using an XML file
-
-
-See CommandBot and PlugBot for more details.
-
-
-"""
-
-__author__ = 'Hernan E. Grecco <hernan.grecco@gmail.com>'
-__license__ = 'MIT License/X11 license'
-
-
+# -*- coding: utf-8 -*-
+import sys
 import logging
-
 import sleekxmpp
 
 
@@ -30,6 +12,12 @@ from .confighandler import ConfigDict
 
 from .acl import Enum
 
+if sys.version_info < (3, 0):
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+else:
+    raw_input = input
+
 
 END_STATUS = Enum(['none', 'restart', 'reload', 'die'])
 
@@ -38,7 +26,7 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
     """ SleekBot is a pluggable Jabber/XMPP bot based on SleekXMPP
 
         SleekBot was originally written by Nathan Fritz and Kevin Smith.
-        This fork is maintained by Hernan E. Grecco
+        Este fork es mantenido por Gonzalo Sánchez Romero
     """
 
     def __init__(self, config, plugin_config=None):
@@ -71,7 +59,7 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         """ Connects to the server
         """
 
-        logging.info("Connecting to ...")
+        logging.info("Conectando ...")
         server = 'nemo.notin.es:5222'
         # self.botconfig.get('connection.server', '')
         if server and isinstance(server, (str, unicode)):
@@ -99,7 +87,7 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
     def register_adhocs(self):
         """ Register all ad-hoc commands with SleekXMPP.
         """
-        aboutform = self.plugin['xep_0004'].makeForm('form', "About SleekBot")
+        aboutform = self.plugin['xep_0004'].makeForm('form', "Sobre SleekBot")
         aboutform.addField('about', 'fixed', value=self.__doc__)
         # self.plugin['xep_0050'].addCommand('about', 'About Sleekbot', aboutform)
         pluginform = self.plugin['xep_0004'].makeForm('form', 'Plugins')
@@ -119,7 +107,7 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         plugin = value['plugin']
         if option == 'about':
             aboutform = self.plugin['xep_0004'].makeForm('form',
-                                                         'About SleekBot')
+                                                         'Sobre SleekBot')
             aboutform.addField('about', 'fixed',
                                value=self.cmd_plugins[plugin].about())
             return aboutform, None, False
@@ -135,10 +123,10 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         for plugin in plugins:
             try:
                 self.registerPlugin(**plugin)
-                logging.info("Registering XMPP plugin %s OK",
+                logging.info("Registro plugin XMPP %s OK",
                              plugin['plugin'])
             except Exception as ex:
-                logging.info("Registering XMPP plugin %s FAILED: %s",
+                logging.info("Registro plugin XMPP %s ERROR: %s",
                              plugin['plugin'], ex)
 
     def handle_session_start(self, event):
@@ -163,19 +151,20 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
                 logging.info('No se han encontrado habitaciones')
 
         for room in set(self.rooms.keys()).difference(rooms.keys()):
-            logging.info("Parting room %s.", room)
+            logging.info("Saliendo de la habitación %s.", room)
             self.plugin['xep_0045'].leaveMUC(room, self.rooms[room])
             del self.rooms[room]
         for room in set(rooms.keys()).difference(self.rooms.keys()):
             self.rooms[room] = rooms[room]
-            logging.info("Joining room %s as %s.", room, rooms[room])
+            logging.info("Uniéndose a la habitación %s como %s.",
+                         room, rooms[room])
             self.plugin['xep_0045'].joinMUC(room, rooms[room])
 
     def restart(self):
         """ Cause the bot to be completely restarted (will reconnect etc.)
         """
         self.end_status = END_STATUS.restart
-        logging.info("Restarting bot")
+        logging.info("Reiniciando bot")
         self.die()
 
     def rehash(self):
@@ -183,12 +172,12 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
             Causes all plugins to be reloaded (or unloaded).
             The XMPP stream and MUC rooms will not be disconnected.
         """
-        logging.info("Rehashing started")
+        logging.info("Recarga iniciada")
         modules = self.cmd_plugins.get_modules()
         CommandBot.pause(self)
         PlugBot.stop(self)
 
-        logging.info("Reloading config file")
+        logging.info("Recargando archivo de configuración")
         self.botconfig = None
         for module in modules:
             reload(module)
@@ -204,15 +193,15 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
         PlugBot.stop(self)
         CommandBot.stop(self)
         self.rooms = {}
-        logging.info("Disconnecting bot")
+        logging.info("Desconectando bot")
         self.disconnect()
 
     def mucnick_to_jid(self, mucroom, mucnick):
         """ Returns the jid associated with a mucnick and mucroom
         """
         if mucroom in self.plugin['xep_0045'].getJoinedRooms():
-            logging.debug("Checking real jid for %s %s", mucroom, mucnick)
-            real_jid = self.plugin['xep_0045'].getJidProperty(mucroom, \
+            logging.debug("Buscando JID real de %s %s", mucroom, mucnick)
+            real_jid = self.plugin['xep_0045'].getJidProperty(mucroom,
                                                               mucnick, 'jid')
             logging.debug(real_jid)
             if real_jid:
@@ -232,4 +221,3 @@ class SleekBot(sleekxmpp.ClientXMPP, CommandBot, PlugBot):
             else:
                 return msg['from'].bare
         return None
-

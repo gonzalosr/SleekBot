@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -23,32 +24,32 @@ class AliasCmd(object):
 class AliasStore(object):
     """ Class for storing aliased commands into he database
     """
-    
+
     def __init__(self, store):
         self.store = store
         self.create_table()
 
     def create_table(self):
         """ Create the alias table.
-        """        
+        """
         with self.store.context_cursor() as cur:
-            if not self.store.has_table(cur,'alias'):
+            if not self.store.has_table(cur, 'alias'):
                 cur.execute("""CREATE TABLE "alias" (
                             "id" INTEGER PRIMARY KEY AUTOINCREMENT,
                             "jid" VARCHAR(256), "alias" VARCHAR(256),
                             "command" VARCHAR(256))""")
                 cur.execute('CREATE INDEX idx_jid ON alias (jid)')
                 cur.execute('CREATE INDEX idx_jid_alias ON alias (jid, alias)')
-                logging.debug("alias table created")
+                logging.debug("creada tabla alias")
 
     def update(self, aliascmd):
         """ Update or insert an aliased command.
         """
         with self.store.context_cursor() as cur:
             cur.execute('SELECT * FROM alias WHERE jid=? AND alias=?',
-                    (aliascmd.jid, aliascmd.alias))
+                        (aliascmd.jid, aliascmd.alias))
             if (len(cur.fetchall()) > 0):
-                cur.execute('UPDATE alias SET jid=?, command=?, alias=?' \
+                cur.execute('UPDATE alias SET jid=?, command=?, alias=?'
                     'WHERE jid=? AND alias=?', (aliascmd.jid, aliascmd.command,
                                                 aliascmd.alias, aliascmd.jid,
                                                 aliascmd.alias))
@@ -62,7 +63,7 @@ class AliasStore(object):
         """
         with self.store.context_cursor() as cur:
             cur.execute('SELECT * FROM alias WHERE jid=? AND alias=?',
-                    (aliascmd.jid, aliascmd.alias))
+                        (aliascmd.jid, aliascmd.alias))
             results = cur.fetchall()
 
             if len(results) == 0:
@@ -96,7 +97,7 @@ class Alias(BotPlugin):
     """
 
     freetextRegex = ''
-    
+
     def __init__(self, aliases=None):
         BotPlugin.__init__(self)
         # global aliases
@@ -104,7 +105,7 @@ class Alias(BotPlugin):
         if not aliases:
             return
         for alias, cmd in aliases.items():
-            logging.debug("Load global alias: %s", alias)
+            logging.debug("Cargar alias global: %s", alias)
             self.global_aliases[alias] = AliasCmd(None, alias, cmd)
 
     def _on_register(self):
@@ -114,7 +115,7 @@ class Alias(BotPlugin):
         self.chat_prefix = self.bot.chat_prefix
         self.muc_prefix = self.bot.muc_prefix
         self.alias_store = AliasStore(self.bot.store)
-        
+
         # botfreetext regex string with im and mux prefix
         global freetextRegex
         freetextRegex = "^[\%s\%s][a-zA-Z].*$" \
@@ -150,9 +151,9 @@ class Alias(BotPlugin):
                 msg['body'] = "%s%s %s" % (prefix, aliascmd.command, args)
                 self.bot.handle_msg_botcmd(msg)
 
-    @botcmd(usage="[add | del | list] [alias] [command [options]]")
+    @botcmd(usage="[add | del | list] [alias] [comando [opciones]]")
     def alias(self, command, args, msg):
-        """ Replace long commands (incl. options) with short words.
+        """ Reemplaza comandos largos (incluyendo opciones) con palabras cortas.
         """
         try:
             args = parse_args(args, (('action',
@@ -163,9 +164,9 @@ class Alias(BotPlugin):
         args.parsed_ = False
         return getattr(self, 'alias_' + args.action,)(command, args, msg)
 
-    @botcmd(usage="alias command [options])", hidden=True)
+    @botcmd(usage="alias comando [opciones])", hidden=True)
     def alias_add(self, command, args, msg):
-        """ Add an alias with the given command and options.
+        """ Añade un alias con el comando y opciones especificados.
         """
         try:
             args = parse_args(args, (('action', (str, 'add')), ('alias', str),
@@ -183,13 +184,13 @@ class Alias(BotPlugin):
                 command = args.command
             self.alias_store.update(AliasCmd(self.bot.get_real_jid(msg),
                                             args.alias, command))
-            return "Done."
+            return "Alias guardado."
         else:
-            return "%s is a bot command." % args.alias
+            return "%s es un comando del bot." % args.alias
 
     @botcmd(usage="alias", hidden=True)
     def alias_del(self, command, args, msg):
-        """ Delete an alias.
+        """ Elimina un alias.
         """
         try:
             args = parse_args(args, (('action', (str, 'del')), ('alias', str)))
@@ -201,31 +202,31 @@ class Alias(BotPlugin):
         if not aliascmd is None:
             self.alias_store.delete(AliasCmd(self.bot.get_real_jid(msg),
                                     args.alias))
-            return "Done."
+            return "Alias eliminado."
         if args.alias in self.global_aliases:
-            return "You can not delete a global alias."
-        return "Unkown alias."
+            return "No se puede borrar un alias global."
+        return "Alias desconocido."
 
     @botcmd(hidden=True)
     def alias_list(self, command, args, msg):
-        """ List available aliases.
+        """ Muestra los alias existentes.
         """
         aliases = self.alias_store.get_all(self.bot.get_real_jid(msg))
-        response = 'Aliases: '
+        response = 'Alias: '
         if not aliases is None:
             for aliascmd in aliases:
                 response += "\n%s = %s" % (aliascmd.alias, aliascmd.command)
         if not self.global_aliases == {}:
             for (key, aliascmd) in self.global_aliases.iteritems():
                 response += "\n(*) %s = %s" % (aliascmd.alias, aliascmd.command)
-        if response == 'Aliases: ':
-            response += "None."
+        if response == 'Alias: ':
+            response += "Ninguno."
         return response
-    
+
     def example_config(self):
         """ Configuration example """
-        return {'aliases': {'r': 'rehash', 
+        return {'aliases': {'r': 'rehash',
                             'r100': 'random 100',
-                            'say2muc': 'say c1@conference.localhost'}} 
+                            'say2muc': 'say c1@conference.localhost'}}
 
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -120,7 +121,7 @@ class ChefFilter(object):
 
 
 class Filter(BotPlugin):
-    """A plugin to filter text."""
+    """Un plugin que filtra textos."""
 
     def _on_register(self):
         """ Register available filters.
@@ -130,13 +131,13 @@ class Filter(BotPlugin):
 #        self.availableFilters['chef'] = chefFilter()
         self.available_filters['robber'] = RobberFilter()
 
-    @botcmd(name='filter', usage='[filter type] [text]')
+    @botcmd(name='filter', usage='[tipo de filtro] [texto]')
     def handle_filter(self, command, args, msg):
-        """Parses the text through a filter"""
+        """Básicamente, es un parser de texto."""
         if args == None or args == "" or len(args.split(" ")) < 2:
-            return "Insufficient information, please check help."
+            return "Información insuficiente. Por favor, revise la ayuda."
         language = args.split(" ")[0].lower()
         text = " ".join(args.split(" ")[1:])
         if language not in self.available_filters.keys():
-            return "Language %s not available" % language
+            return "El idioma %s no está disponible" % language
         return self.available_filters[language](text)

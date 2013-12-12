@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -26,14 +27,14 @@ class MUCStability(BotPlugin):
 
     def _on_register(self):
         """ Register stanza and corresponding handler."""
-        callback = Callback("groupchat_error", MatchXMLMask(MASK), 
+        callback = Callback("groupchat_error", MatchXMLMask(MASK),
                             self.handle_message_error)
-        self.bot.registerHandler(callback)                
+        self.bot.registerHandler(callback)
         threading.Thread(target=self.loop).start()
 
     def _on_unregister(self):
         self.__event.set()
-                          
+
     def loop(self):
         """ Send message to MUCs."""
         while not self.__event.is_set():
@@ -51,6 +52,6 @@ class MUCStability(BotPlugin):
         if room not in self.bot.plugin['xep_0045'].getJoinedRooms():
             return
         nick = self.bot.plugin['xep_0045'].ourNicks[room]
-        logging.debug("muc_stability: error from %s, rejoining as %s", 
+        logging.debug("muc_stability: error from %s, rejoining as %s",
                       room, nick)
         self.bot.plugin['xep_0045'].joinMUC(room, nick)

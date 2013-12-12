@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     factoidbot.py - A plugin for remembering facts.
     Copyright (C) 2007 Kevin Smith
@@ -25,7 +26,7 @@ from sleekbot.plugbot import BotPlugin
 
 class FactStore(object):
     """ Storage for facts """
-    
+
     def __init__(self):
         self.null = None
         self.data = {}

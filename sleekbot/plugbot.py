@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -34,7 +35,6 @@ class BotPlugin(Plugin):
         """
         return None
 
-
     plugin_dict = property(fget=Plugin._get_dict, fset=_set_dict)
 
 
@@ -69,19 +69,19 @@ class PlugBot(object):
         for plugin in plugins:
             loaded = self.cmd_plugins.register(**plugin)
             res = 'OK' if loaded else 'FAILED'
-            logging.info('Registering plugin %s %s', plugin['plugin'], res)
+            logging.info('Registrando plugin %s %s', plugin['plugin'], res)
 
     def stop(self):
         """ Unregister command plugins
         """
-        logging.info("Stopping PlugBot")
+        logging.info("Parando PlugBot")
         for plugin in self.cmd_plugins.keys():
             del self.cmd_plugins[plugin]
 
     def start(self):
         """ Register command plugins
         """
-        logging.info("Starting PlugBot")
+        logging.info("Iniciando PlugBot")
         self.register_cmd_plugins()
 
     def reset(self):

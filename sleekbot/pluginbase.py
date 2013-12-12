@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -54,13 +55,13 @@ class Plugin(object):
     def about(self):
         """ About the plugin: returns the docstring."""
         return self.__doc__
-    
+
     def _on_register(self):
         """ Called when the plugin is added to the PluginDict.
         Override in your derived class if necessary.
         """
         pass
-    
+
     def _on_unregister(self):
         """ Called when the plugin is removed from the PluginDict.
         Override in your derived class if necessary.
@@ -98,7 +99,7 @@ class Plugin(object):
             self._on_unregister()
         else:
             self._on_register()
-            self._register_calls()       
+            self._register_calls()
 
     plugin_dict = property(fget=_get_dict, fset=_set_dict)
 
@@ -140,7 +141,7 @@ class PluginDict(dict):
             event[1](value)
 
         super(PluginDict, self).__setitem__(key, value)
-        logging.info("%s registered", key)
+        logging.info("%s registrado", key)
 
     def __delitem__(self, key):
         """ Remove plugin from the dictionary
@@ -151,9 +152,9 @@ class PluginDict(dict):
                 event[1](current)
             self._unregister_event(key)
             current.plugin_dict = None
-            logging.info("%s unregistered", key)
+            logging.info("%s deregistrado", key)
         else:
-            logging.warning("Plugin not in dict %s.", key)
+            logging.warning("Plugin no indexado %s.", key)
 
         super(PluginDict, self).__delitem__(key)
 
@@ -175,7 +176,7 @@ class PluginDict(dict):
                 elif not package in self.__imported:
                     __import__(package)
                     self.__imported.add(package)
-                    logging.debug('Imported package %s', package)
+                    logging.debug('Importado paquete %s', package)
                 if module is None:
                     module = plugin.lower()
 
@@ -189,7 +190,7 @@ class PluginDict(dict):
             return True
 
         except Exception as ex:
-            logging.error('Error while registering plugin %s: %s', plugin, ex)
+            logging.error('Error al registrar el plugin %s: %s', plugin, ex)
 
     def register_many(self, include='__all__', exclude=None, config=None):
         """ Register multiple plugins
@@ -218,7 +219,7 @@ class PluginDict(dict):
         module = __import__(self[name].__module__, fromlist=name)
         del self[name]
         reload(module)
-        self.register(name, config=config, 
+        self.register(name, config=config,
                       module=module.__name__.split('.')[-1])
 
     def reload_all(self):

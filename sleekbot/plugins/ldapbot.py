@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -7,7 +8,7 @@
 <plugin name="ldapbot">
     <config>
         <server uri="ldap://server.com:389" binddn="" secret="" />
-        <option name="user" help="Returns some user info" 
+        <option name="user" help="Returns some user info"
                 usage="user [givenname|surname|uid]">
             <basedn dn="ou=people,dc=domain,dc=tld" />
             <search_filter>(&amp;(account=active)(|(uid=*%s*)(sn=*%s*)
@@ -20,7 +21,7 @@
                 <attr name="telephoneNumber" />
             </retrieve_attributes>
             <response msg="%(givenName)s %(sn)s\nOrg: %(ou)s\n
-                           E-Mail: %(mail)s\nPhone: %(telephoneNumber)s" 
+                           E-Mail: %(mail)s\nPhone: %(telephoneNumber)s"
                            order="sorted" delimiter="\n" limit="1" />
         </option>
     </config>
@@ -74,7 +75,7 @@ class LDAPBot(BotPlugin):
                 'basedn': option.find('basedn').attrib['dn'],
                 'order': res.get('order', default='sorted'),
                 'limit': res.get('limit'),
-                'delimiter': res.get('delimiter', default=", ").replace('\\n', 
+                'delimiter': res.get('delimiter', default=", ").replace('\\n',
                                                                         '\n'),
                 'response_msg': res.get('msg', default='').replace('\\n', '\n'),
                 'search_filter': option.findtext('search_filter'),
@@ -104,7 +105,7 @@ class LDAPBot(BotPlugin):
     def ldap_search(self, search_filter, retrieve_attrib, option):
         """ Run a search on LDAP server
         """
-        logging.debug('Connecting to ldap server %s', 
+        logging.debug('Connecting to ldap server %s',
                       self.config.find('server').attrib['uri'])
         self.ldap = ldap.initialize(self.config.find('server').attrib['uri'])
         try:

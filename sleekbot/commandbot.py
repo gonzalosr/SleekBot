@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -27,9 +28,9 @@ def get_class(class_string):
     """
     module_name, _, class_name = class_string.rpartition('.')
     if module_name == '':
-        raise ValueError('Class name must contain module part.')
+        raise ValueError('El nombre de la clase debe contener parte del módulo.')
     return getattr(__import__(module_name, globals(), locals(),
-                             [class_name], -1), class_name)
+                   [class_name], -1), class_name)
 
 
 def denymsg(msg):
@@ -83,8 +84,8 @@ def botcmd(name='', usage='', title='', doc='', chat=True, muc=True,
                 return wrapped(*args, **kwargs)
             else:
                 return getattr(wrapped, '_denymsg', None) or \
-                       getattr(allow, 'denymsg',
-                       'You are not allowed to execute this command.')
+                    getattr(allow, 'denymsg',
+                            'No puedes pasar!! El fuego oscuro no te servirá de nada, llama de Udûn!!')
 
         # Warning this is not the same as if allow:
         _inner = _nocheck if allow is True else _check
@@ -96,8 +97,8 @@ def botcmd(name='', usage='', title='', doc='', chat=True, muc=True,
         _inner.botcmd_info['hidden'] = hidden
         _inner.botcmd_info['name'] = name or wrapped.__name__.replace('_', '-')
         _inner.botcmd_info['title'] = title or \
-                                      wrapped.__doc__.split('\n', 1)[0] or \
-                                      ''
+            wrapped.__doc__.split('\n', 1)[0] or \
+            ''
         _inner.botcmd_info['doc'] = doc or wrapped.__doc__ or 'undocumented'
         _inner.botcmd_info['usage'] = usage or ''
         _inner.botcmd_info['chat'] = chat
@@ -178,7 +179,7 @@ class CommandBot(object):
             and message handler
         """
 
-        self.chat_prefix = '/'
+        self.chat_prefix = '.'
         self.muc_prefix = '!'
 
         self.chat_commands = {}
@@ -255,7 +256,7 @@ class CommandBot(object):
     def start(self):
         """ Mesages will be received and processed
         """
-        logging.info("Starting CommandBot")
+        logging.info("Iniciando CommandBot")
         CommandBot.reset(self)
         self.add_event_handler("message", self.handle_msg_botcmd, threaded=True)
         CommandBot.resume(self)
@@ -265,7 +266,7 @@ class CommandBot(object):
         """
         self.chat_prefix = self.botconfig.get('prefixes.chat', '/')
         self.muc_prefix = self.botconfig.get('prefixes.chat', '!')
-        
+
         self.chat_commands = {}
         self.muc_commands = {}
 
@@ -273,16 +274,17 @@ class CommandBot(object):
         self.register_commands(self)
         aclnode = self.botconfig.get('acl', dict())
         self.acl = get_class(aclnode.get('classname', 'acl.ACL')) \
-                  (self, aclnode.get('config', None))
+            (self, aclnode.get('config', None))
         self.acl.update_from_dict(aclnode)
-        self.require_membership = self.botconfig.get('require_membership', False)
-        logging.info(self.acl.summarize() + \
-                     'Require membership %s', self.require_membership)
+        self.require_membership = self.botconfig.get('require_membership',
+                                                     False)
+        logging.info(self.acl.summarize() +
+                     'Pertenencia a la Orden requerida: %s', self.require_membership)
 
     def stop(self):
         """ Messages will not be received
         """
-        logging.info("Stopping CommandBot")
+        logging.info("Parando CommandBot")
         self.del_event_handler("message", self.handle_msg_botcmd)
 
     def pause(self):
@@ -357,10 +359,10 @@ class CommandBot(object):
                               msg['from'].resource), response,
                               mtype=msg.get('type', 'chat'))
 
-    @botcmd(name='help', usage='help [topic]')
+    @botcmd(name='help', usage='help [tema]')
     def handle_help(self, command, args, msg):
-        """ Help Commmand
-        Returns this list of help commands if no topic is specified.  Otherwise returns help on the specific topic.
+        """ Comando help
+        Devuelve esta lista de comandos si no se especifica un tema. De lo contrario devuelve ayuda sobre el tema especificado.
         """
         if msg['type'] == 'groupchat':
             commands = self.muc_commands
@@ -373,49 +375,49 @@ class CommandBot(object):
         args = args.strip()
         if args:
             if args in commands and \
-               (commands[args].botcmd_info['allow'] is True or \
-               commands[args].botcmd_info['allow'](self, msg)):
+               (commands[args].botcmd_info['allow'] is True or
+                    commands[args].botcmd_info['allow'](self, msg)):
                 fun = commands[args]
                 response += '%s -- %s\n' % (args, fun.botcmd_info['title'])
                 response += ' %s\n' % fun.botcmd_info['doc']
-                response += 'Usage: %s%s %s\n' % \
+                response += 'Uso: %s%s %s\n' % \
                             (prefix, args, fun.botcmd_info['usage'])
                 return response
             else:
-                response += '%s is not a valid command' % args
+                response += '%s no es un comando válido' % args
 
-        response += "Commands:\n"
+        response += "\nComandos:\n"
         for command in sorted(commands.keys()):
             fun = commands[command]
             if not fun.botcmd_info['hidden'] and \
-               (fun.botcmd_info['allow'] is True or \
-               fun.botcmd_info['allow'](self, msg)):
+               (fun.botcmd_info['allow'] is True or
+                    fun.botcmd_info['allow'](self, msg)):
                 response += "%s -- %s\n" % (command, fun.botcmd_info['title'])
         response += "---------\n"
         return response
 
-    @denymsg('You are not my owner')
+    @denymsg('No eres mi amo')
     def msg_from_owner(self, msg):
         """ Was this message sent from a bot owner?
         """
         jid = self.get_real_jid(msg)
         return jid in self.acl.owners
 
-    @denymsg('You are not my admin')
+    @denymsg('No eres mi amigo')
     def msg_from_admin(self, msg):
         """ Was this message sent from a bot admin?
         """
         jid = self.get_real_jid(msg)
         return jid in self.acl.owners or jid in self.acl.admins
 
-    @denymsg('You are not a member')
+    @denymsg('No eres miembro de la Orden')
     def msg_from_member(self, msg):
         """ Was this message sent from a bot member?
         """
         jid = self.get_real_jid(msg)
         return jid in self.acl.owners or \
-               jid in self.acl.admins or \
-               jid in self.acl.users
+            jid in self.acl.admins or \
+            jid in self.acl.users
 
     def should_answer_msg(self, msg):
         """ Checks whether the bot is configured to respond to
@@ -508,14 +510,14 @@ def parse_args(cargs, syntax, separator=None):
                 try:
                     val = typ(arg)
                 except:
-                    raise ArgError(name, '%s cannot be converted to %s' %
+                    raise ArgError(name, '%s no se puede convertir a %s' %
                                          (arg, typ.__name__))
             if isinstance(valid, (list, tuple)) and not val in valid:
-                raise ArgError(name, '%s is not a valid value for %s. '
-                                     'Valid: %s' % (val, name, valid))
+                raise ArgError(name, '%s no es un valor válido para %s. '
+                                     'Correcto: %s' % (val, name, valid))
 
         if val is None:
-            raise ArgError(name, '%s is a mandatory argument' % name)
+            raise ArgError(name, '%s es un argumento obligatorio' % name)
         setattr(out, name, val)
     out.parsed_ = True
     return out

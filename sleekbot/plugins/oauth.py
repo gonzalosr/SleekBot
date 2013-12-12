@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -9,10 +10,10 @@ OAUTH_REQ = "<iq type='get' xmlns='jabber:client'>" + \
             "<query xmlns='urn:xmpp:oauth:request' /></iq>"
 OAUTH_ACC = "<iq type='get' xmlns='jabber:client'>" + \
             "<query xmlns='urn:xmpp:oauth:access' /></iq>"
-            
+
 class OAuth(object):
     """ A Plugin to provide OAuth authentication. """
-    
+
     def __init__(self, bot, config):
         self.bot = bot
         #print dir(self.bot)
@@ -67,7 +68,7 @@ class OAuth(object):
         oauthxml.append(tokenxml)
         oauth.append(secretxml)
         return oauth
-        
+
     def make_error(self):
         """ Makes an error. """
         cond = self.makeStanzaErrorCondition('bad-request')

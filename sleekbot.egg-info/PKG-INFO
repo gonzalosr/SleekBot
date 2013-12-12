@@ -1,0 +1,27 @@
+Metadata-Version: 1.1
+Name: sleekbot
+Version: 0.4
+Summary: SleekBot: an extendable XMPP/Jabber Bot based on SleekXMPP
+Home-page: http://github.com/hgrecco/SleekBot
+Author: Hernan E. Grecco
+Author-email: hernan.grecco@gmail.com
+License: UNKNOWN
+Download-URL: http://github.com/hgrecco/SleekBot/tarball/master
+Description: 
+        SleekBot
+        -------------------------------------
+        
+        SleekBot is an easily extendable Bot for XMPP (aka Jabber, Google Talk, etc)
+        written in Python using the SleekXMPP library.
+        
+        
+Keywords: xmpp,bot,jabber
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Environment :: Other Environment
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Text Processing :: Linguistic
+Classifier: Topic :: Communications :: Chat
+Requires: sleekxmpp

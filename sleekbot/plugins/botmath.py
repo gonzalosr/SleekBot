@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -7,8 +8,6 @@
 
 import random
 import string
-
-import inspect
 
 from sleekbot.commandbot import botcmd, parse_args, ArgError
 from sleekbot.plugbot import BotPlugin
@@ -23,15 +22,17 @@ SAFE_LIST = ['math', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'cosh',
 SAFE_DICT = dict([(k, getattr(locals()['math'], k, None)) for k in SAFE_LIST])
 SAFE_DICT['d'] = random.randint
 
+
 class BotMath(BotPlugin):
     """A nerdy plugin for rolling complex or simple formulas."""
 
-    def __init__(self, passgen={'choice': 'all', 'length': 8, 'max_length': 100}):
+    def __init__(self, passgen={'choice': 'all', 'length': 8,
+                 'max_length': 100}):
         # Passgen defaults
         BotPlugin.__init__(self)
         self._passgen = confighandler.get_defaults(self.__init__).update(passgen)
 
-    @botcmd(usage='[math expression]')
+    @botcmd(usage='[expresión matemática]')
     def calc(self, command, args, msg):
         """Does a mathematical calculation
         You can do simple calculations such as 2+3
@@ -58,12 +59,6 @@ class BotMath(BotPlugin):
                    (msg['mucnick'], ran, args.first, args.second)
         else:
             return "%d (%s - %s)" % (ran, args.first, args.second)
-
-    @botcmd(usage='[dice calculation]')
-    def roll(self, command, args, msg):
-        """Rolls dice for you. d(n) is a dice with n sides
-        Example: roll (1 + d(6) + 2*d(10) + 5 + d(4) * 2 """
-        return str(eval(args, {"__builtins__": None}, SAFE_DICT))
 
     @botcmd(usage='[alpha|alphanum|numbers|all] [length]')
     def passgen(self, command, args, msg):
@@ -92,5 +87,5 @@ class BotMath(BotPlugin):
         if int(length) > int(self._passgen['max_length']):
             return "Do you really need such a long password?"
 
-        return "".join(random.choice(choices[choice]) \
+        return "".join(random.choice(choices[choice])
                        for x in range(int(length)))

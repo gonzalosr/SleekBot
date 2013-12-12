@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -12,37 +13,37 @@ class Admin(BotPlugin):
     """A plugin to manage the bot."""
 
     @botcmd(name='rehash', allow=CommandBot.msg_from_owner)
-    @denymsg('You are insufficiently cool, go away')
+    @denymsg('No molas lo suficiente como para ejecutar este comando')
     def handle_rehash(self, command, args, msg):
         """ Reload the bot config and plugins without dropping the XMPP stream.
         """
 
         self.bot.rehash()
-        return "Rehashed boss"
+        return "Recargado, amo"
 
     @botcmd(name='restart', allow=CommandBot.msg_from_owner)
-    @denymsg('You are insufficiently cool, go away')
+    @denymsg('No molas lo suficiente como para ejecutar este comando')
     def handle_restart(self, command, args, msg):
         """ Restart the bot, reconnecting, etc ..."""
 
         self.bot.restart()
-        return "Restarted boss"
+        return "Reiniciado, amo"
 
     @botcmd(name='die', allow=CommandBot.msg_from_owner)
-    @denymsg('You are insufficiently cool, go away')
+    @denymsg('No molas lo suficiente como para ejecutar este comando')
     def handle_die(self, command, args, msg):
         """ Kill the bot."""
 
         self.bot.die()
-        return "Dying (you'll never see this message)"
+        return "Muriendo... Nunca verás este mensaje"
 
     @botcmd(name='reload', allow=CommandBot.msg_from_owner)
     def handle_reload(self, command, args, msg):
         """ Reload the plugins """
 
         self.bot.cmd_plugins.reload_all()
-        return "Reloaded boss"
-    
+        return "Plugins recargados, amo"
+
     @botcmd(hidden=True)
     def register(self, command, args, msg):
         """ Register yourself the first time as a bot owner
@@ -51,26 +52,26 @@ class Admin(BotPlugin):
             return
         rolen = getattr(self.bot.acl.ROLE, 'owner')
         self.bot.acl[msg['from'].bare] = rolen
-        return "You are now my owner."
+        return "Ahora eres mi amo."
 
 
 class ACL(BotPlugin):
     """ A plugin to manage users."""
 
-    @botcmd(usage='[add|del|see|test] jid role', 
+    @botcmd(usage='[add|del|see|test] jid rol',
             allow=CommandBot.msg_from_admin)
     def acl(self, command, args, msg):
-        """ Access control list management
+        """ Administración de ACLs
         """
         try:
-            args = parse_args(args, (('action', ('add', 'del', 'see', 'test')), 
+            args = parse_args(args, (('action', ('add', 'del', 'see', 'test')),
                                      ('jid', str), ('role', 'user')))
         except ArgError as ex:
             return ex.msg
 
         return getattr(self, 'acl_' + args.action,)(command, args, msg)
 
-    @botcmd(usage='jid role', allow=CommandBot.msg_from_admin, hidden=True)
+    @botcmd(usage='jid rol', allow=CommandBot.msg_from_admin, hidden=True)
     def acl_add(self, command, args, msg):
         """Add a jid with a given role
             If the user exists, modify the role.
@@ -83,14 +84,14 @@ class ACL(BotPlugin):
         try:
             rolen = getattr(self.bot.acl.ROLE, args.role)
         except AttributeError as ex:
-            return '%s is not a valid role' % args.role
+            return '%s no es un rol válido' % args.role
 
         present = args.jid in self.bot.acl
         self.bot.acl[args.jid] = rolen
         if present:
-            return '%s updated as %s' % (args.jid, args.role)
+            return '%s actualizado como %s' % (args.jid, args.role)
         else:
-            return '%s added as %s' % (args.jid, args.role)
+            return '%s añadido como %s' % (args.jid, args.role)
 
     @botcmd(usage='jid', allow=CommandBot.msg_from_admin, hidden=True)
     def acl_del(self, command, args, msg):
@@ -104,9 +105,9 @@ class ACL(BotPlugin):
         present = args.jid in self.bot.acl
         if present:
             del self.bot.acl[args.jid]
-            return '%s deleted' % args.jid
+            return '%s eliminado' % args.jid
         else:
-            return '%s was not found in acl' % args.jid
+            return '%s no se ha encontrado en la acl' % args.jid
 
     @botcmd(usage='jid', allow=CommandBot.msg_from_admin, hidden=True)
     def acl_see(self, command, args, msg):
@@ -120,15 +121,15 @@ class ACL(BotPlugin):
         part = self.bot.acl.find_part(args.jid)
         if part:
             if part == args.jid:
-                return '%s is %s' % \
-                        (args.jid, self.bot.acl.ROLE[self.bot.acl[args.jid]])
+                return '%s es %s' % \
+                    (args.jid, self.bot.acl.ROLE[self.bot.acl[args.jid]])
             else:
-                return '%s through %s is %s' % \
+                return '%s a traves de %s es %s' % \
                        (args.jid, part, self.bot.acl.ROLE[self.bot.acl[part]])
         else:
-            return '%s was not found in acl' % args.jid
+            return '%s no se ha encontrado en la acl' % args.jid
 
-    @botcmd(usage='jid role', allow=CommandBot.msg_from_admin, hidden=True)
+    @botcmd(usage='jid rol', allow=CommandBot.msg_from_admin, hidden=True)
     def acl_test(self, command, args, msg):
         """Test if jid belongs to role
         """
@@ -139,14 +140,13 @@ class ACL(BotPlugin):
         try:
             rolen = getattr(self.bot.acl.ROLE, args.role)
         except:
-            return '%s is not a valid role' % args.role
+            return '%s no es un rol válido' % args.role
 
         present = args.jid in self.bot.acl
         if present:
             if self.bot.acl.check(args.jid, rolen):
-                return '%s is %s' % (args.jid, args.role)
+                return '%s es %s' % (args.jid, args.role)
             else:
-                return '%s is not %s' % (args.jid, args.role)
+                return '%s no es %s' % (args.jid, args.role)
         else:
-            return '%s was not found in acl' % args.jid
-
+            return '%s no se ha encontrado en la acl' % args.jid

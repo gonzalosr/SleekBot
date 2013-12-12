@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -13,7 +14,7 @@ import copy
 
 from sleekbot.commandbot import botcmd
 from sleekbot.plugbot import BotPlugin
-import sleekbot.confighandler
+import sleekbot.confighandler as confighandler
 
 SEARCH = """(([Tt]he|[mM]y)[\s\w\-0-9]+ (is|are|can|has|got)|I am|i am|I'm|
 (?=^|,|\.\s|\?)?[\w'0-9\-]+ (is|are|can|got|has))[\s\w'0-9\-:$@%^&*]+"""
@@ -22,8 +23,9 @@ class Remember(BotPlugin):
     """A plugin to rembember events."""
 
     def __init__(self, idlemin=60, idlemax=600):
+        kwargs = ""
         BotPlugin.__init__(self)
-        confighandler.dict_to_private(self, kwargs)
+        confighandler.dict_to_private(self, **kwargs)
 
     def _on_register(self):
         self.know = []

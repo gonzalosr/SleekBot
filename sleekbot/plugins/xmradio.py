@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -29,7 +30,7 @@ class XMRadio(BotPlugin):
 
 class XMChannel(object):
     """ An XMChannel"""
-    
+
     url = 'http://xmradio.com/padData/pad_provider.jsp?channel='
     def __init__(self, inputstr):
         datapointer = urllib2.urlopen(xmChannel.url + inputstr)

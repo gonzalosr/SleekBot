@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     This file is part of SleekBot. http://github.com/hgrecco/SleekBot
     See the README file for more information.
@@ -10,9 +11,9 @@ import codecs
 from sleekbot.plugbot import BotPlugin
 
 
-DAYS = ['Monday', 'Tuesay', 'Wednesday', 'Thursday', 
+DAYS = ['Monday', 'Tuesay', 'Wednesday', 'Thursday',
         'Friday', 'Saturday', 'Sunday']
-MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
+MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
           'August', 'September', 'October', 'November', 'December']
 
 class IrssiLogFile(object):
@@ -39,7 +40,7 @@ class IrssiLogFile(object):
         values = {}
         values['nick'] = presence['nick']
         values['reason'] = presence.get('status', "")
-        values['userhost'] = presence.get('jid', "%s/%s" % 
+        values['userhost'] = presence.get('jid', "%s/%s" %
                                           (presence['room'], presence['nick']))
         values['time'] = self.datetime_to_timestamp(date)
         values['room'] = '#%s' % presence['room']
@@ -101,14 +102,14 @@ class IrssiLogs(BotPlugin):
     def __init__(self, logs=()):
         BotPlugin.__init__(self)
         self._logs = logs
-    
+
     def _on_register(self):
         self.about = "Log muc events."
-        self.bot.add_event_handler("groupchat_presence", 
-                                   self.handle_groupchat_presence, 
+        self.bot.add_event_handler("groupchat_presence",
+                                   self.handle_groupchat_presence,
                                    threaded=True)
-        self.bot.add_event_handler("groupchat_message", 
-                                   self.handle_groupchat_message, 
+        self.bot.add_event_handler("groupchat_message",
+                                   self.handle_groupchat_message,
                                    threaded=True)
         self.room_log_files = {}
         self.room_members = {}
