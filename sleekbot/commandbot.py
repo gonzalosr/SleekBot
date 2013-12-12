@@ -357,12 +357,13 @@ class CommandBot(object):
         else:
             self.send_message("%s/%s" % (msg['from'].bare,
                               msg['from'].resource), response,
-                              mtype=msg.get('type', 'chat'))
+                              mtype=msg.get('type', 'message'))
 
     @botcmd(name='help', usage='help [tema]')
     def handle_help(self, command, args, msg):
         """ Comando help
-        Devuelve esta lista de comandos si no se especifica un tema. De lo contrario devuelve ayuda sobre el tema especificado.
+        Devuelve esta lista de comandos si no se especifica un tema.
+        De lo contrario devuelve ayuda sobre el tema especificado.
         """
         if msg['type'] == 'groupchat':
             commands = self.muc_commands

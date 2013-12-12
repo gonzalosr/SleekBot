@@ -6,8 +6,9 @@
 
 from sleekbot.commandbot import botcmd, CommandBot, denymsg
 from sleekbot.plugbot import BotPlugin
-from sleekxmpp.exceptions import IqError, IqTimeout
-import logging
+from time import gmtime, strftime
+# from sleekxmpp.exceptions import IqError, IqTimeout
+# import logging
 
 
 class Others(BotPlugin):
@@ -32,9 +33,13 @@ class Others(BotPlugin):
 
         if args.count(" ") >= 1:
             [jid, text] = args.split(" ", 1)
+            idmensaje = str(msg['id'])
+            fechahora = strftime("%d-%m-%Y %H:%M:%S")
+            origen = str(msg['from']).split('@')[0].capitalize()
+            texto = idmensaje + " desde " + origen + "\n" + fechahora + "\n" + text
         else:
             return "Parámetros insuficientes"
-        self.bot.sendMessage(jid, text, mtype='message')
+        self.bot.sendMessage(jid, texto, mtype='message')
         return "Mensaje enviado."
 
     @botcmd(usage='[telefono] [texto]', allow=CommandBot.msg_from_owner)
